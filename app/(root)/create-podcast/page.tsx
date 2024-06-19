@@ -32,6 +32,10 @@ import GeneratePodcast from "@/components/GeneratePodcast";
 import GenerateThumbnail from "@/components/GenerateThumbnail";
 import { Loader } from "lucide-react";
 import { Id } from "@/convex/_generated/dataModel";
+import { useToast } from "@/components/ui/use-toast";
+import { useMutation } from "convex/react";
+import { api } from "@/convex/_generated/api";
+import { useRouter } from "next/navigation";
 
 const formSchema = z.object({
   podcastTitle: z.string().min(2),
@@ -39,6 +43,9 @@ const formSchema = z.object({
 });
 const voiceCategories = ["alloy", "shimmer", "nova", "echo", "fable", "onyx"];
 const createPodcast = () => {
+  const CreatePodcast = useMutation(api.podcasts.createPodcast);
+  const router = useRouter();
+  const { toast } = useToast();
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -47,8 +54,35 @@ const createPodcast = () => {
     },
   });
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    console.log(values);
+  async function onSubmit(values: z.infer<typeof formSchema>) {
+    try {
+      setisSubmitting(true);
+      if (!imageUrl || !voiceType) {
+        toast({ title: "Please generate audio and image" });
+        setisSubmitting(false);
+        throw new Error("please generate audio and image");
+      }
+      const podcast = await CreatePodcast({
+        podcastTitle: values.podcastTitle,
+        podcastDescription: values.podcastDescription,
+        audioUrl,
+        imageUrl,
+        imagePrompt,
+        voicePrompt,
+        views: 0,
+        audioDuration,
+        audioStorageId: audioStorageId!,
+        imageStorageId: imageStorageId!,
+        voiceType,
+      });
+      toast({ title: "Podcast created" });
+      setisSubmitting(false);
+      router.push("/");
+    } catch (error) {
+      console.log(error);
+      toast({ title: "Error", variant: "destructive" });
+      setisSubmitting(false);
+    }
   }
   const [voiceType, setvoiceType] = useState<string | null>(null);
   const [isSubmitting, setisSubmitting] = useState(false);
@@ -148,7 +182,7 @@ const createPodcast = () => {
           </div>
           <div className="flex flex-col pt-10">
             <GeneratePodcast
-              setAudioStorageId={setaudioStorageId}
+              setAudioStorageId={setaudioStorageId!}
               setAudio={setaudioUrl}
               voiceType={voiceType!}
               audio={audioUrl}
@@ -156,7 +190,13 @@ const createPodcast = () => {
               setAudioDuration={setaudioDuration}
               voicePrompt={voicePrompt}
             />
-            <GenerateThumbnail />
+            <GenerateThumbnail
+              setImage={setimageUrl}
+              setImageStorageId={setimageStorageId}
+              image={imageUrl}
+              imagePrompt={imagePrompt}
+              setImagePrompt={setimagePrompt}
+            />
             <div className="mt-10 w-full">
               <Button
                 type="submit"
