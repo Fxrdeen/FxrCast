@@ -42,8 +42,6 @@ export const createPodcast = mutation({
       author: user[0].name,
       authorId: user[0].clerkId,
       authorImageUrl: user[0].imageUrl,
-      audioUrl: "",
-      audioStorageId: null,
     });
   },
 });
