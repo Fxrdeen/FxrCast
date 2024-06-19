@@ -9,26 +9,20 @@ import { Button } from "@/components/ui/button";
 import { SignedIn } from "@clerk/clerk-react";
 
 const Home = () => {
-  // const tasks = useQuery(api.tasks.get);
+  const trendingPodcasts = useQuery(api.podcasts.getTrendingPodcasts);
   return (
     <div className="mt-9 flex flex-col gap-9">
       <section className="flex flex-col gap-5">
         <h1 className="text-20 font-bold text-white-1">Trending Podcasts</h1>
-        <div className="flex min-h-screen flex-col items-center justify-between p-24">
-          {/* {tasks?.map(({ _id, text }) => (
-            <div className="text-white-1" key={_id}>
-              {text}
-            </div>
-          ))} */}
-        </div>
+
         <div className="podcast_grid">
-          {podcastData.map((podcast) => (
+          {trendingPodcasts?.map((podcast) => (
             <PodCastCard
-              key={podcast.id}
-              imgUrl={podcast.imgURL}
-              title={podcast.title}
-              description={podcast.description}
-              podCastId={podcast.id}
+              key={podcast._id}
+              imgUrl={podcast.imageUrl!}
+              title={podcast.podcastTitle}
+              description={podcast.podcastDescription}
+              podcastId={podcast._id}
             />
           ))}
         </div>
