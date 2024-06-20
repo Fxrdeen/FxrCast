@@ -1,4 +1,3 @@
-//
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -42,8 +41,8 @@ const formSchema = z.object({
   podcastDescription: z.string().min(2),
 });
 const voiceCategories = ["alloy", "shimmer", "nova", "echo", "fable", "onyx"];
-const createPodcast = () => {
-  const CreatePodcast = useMutation(api.podcasts.createPodcast);
+const CreatePodcast = () => {
+  const createPodcasts = useMutation(api.podcasts.createPodcast);
   const router = useRouter();
   const { toast } = useToast();
   const form = useForm<z.infer<typeof formSchema>>({
@@ -62,7 +61,7 @@ const createPodcast = () => {
         setisSubmitting(false);
         throw new Error("please generate audio and image");
       }
-      const podcast = await CreatePodcast({
+      const podcast = await createPodcasts({
         podcastTitle: values.podcastTitle,
         podcastDescription: values.podcastDescription,
         audioUrl,
@@ -220,4 +219,4 @@ const createPodcast = () => {
   );
 };
 
-export default createPodcast;
+export default CreatePodcast;
