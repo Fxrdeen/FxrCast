@@ -1,9 +1,10 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Inter, Manrope } from "next/font/google";
 import "./globals.css";
 import ConvexClientProvider from "./providers/ConvexClerkProvider";
+import AudioProvider from "./providers/AudioProvider";
 
-const inter = Inter({ subsets: ["latin"] });
+const inter = Manrope({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: "FxrCast",
@@ -19,10 +20,12 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <ConvexClientProvider>
-        <body className={inter.className}>{children}</body>
-      </ConvexClientProvider>
-    </html>
+    <ConvexClientProvider>
+      <html lang="en">
+        <AudioProvider>
+          <body className={inter.className}>{children}</body>
+        </AudioProvider>
+      </html>
+    </ConvexClientProvider>
   );
 }
